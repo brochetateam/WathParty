@@ -113,8 +113,12 @@
     /* Mascota monitor */
     .mascot-hero { width: var(--mascot-size); height: var(--mascot-size); cursor: pointer; }
     .mascot-hero svg { width: 100%; height: 100%; overflow: visible; }
-    .eye-group { transform-origin: center; transition: transform 0.2s ease-out; }
-    .eye-lid { transform-origin: center; animation: blink 6s infinite; }
+    .eye-group { transition: transform 0.2s ease-out; }
+    .eye-lid {
+      transform-origin: center;
+      transform-box: fill-box;
+      animation: blink 6s infinite;
+    }
     @keyframes blink { 0%, 97%, 100% { transform: scaleY(1); } 98%, 99% { transform: scaleY(0.1); } }
     .wink .eye--left .eye-lid { animation: wink-animation 0.5s; }
     .wink .eye--right .eye-lid { animation: none; }
@@ -331,6 +335,10 @@
             <i class="fas fa-plus"></i>
             <span>Crea Sala</span>
           </button>
+          <button class="btn" id="joinRoomBtn" style="display: none;">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Unirse</span>
+          </button>
         </div>
 
         <div id="setupStatus" style="text-align:center; color: var(--muted); margin-top:10px;"></div>
@@ -488,6 +496,7 @@
       playerName: document.getElementById('playerName'),
       videoFile: document.getElementById('videoFile'),
       createRoomBtn: document.getElementById('createRoomBtn'),
+      joinRoomBtn: document.getElementById('joinRoomBtn'),
       setupStatus: document.getElementById('setupStatus'),
       setupCard: document.getElementById('setupCard'),
       videoCard: document.getElementById('videoCard'),
@@ -830,12 +839,43 @@
       const urlParams = new URLSearchParams(window.location.search);
       const roomFromUrl = urlParams.get('room');
       if (roomFromUrl) {
-        // Auto-join sin botón
-        joinGuestSession(roomFromUrl);
-        showToast('Uniéndote a una sala desde un enlace.');
+        // Guest flow: show join UI
+        el.setupCard.querySelector('.mode-title').textContent = 'Unirse a una Sala';
+        el.setupCard.querySelector('.mode-sub').textContent = 'Introduce tu nombre para entrar';
+        
+        const videoUploadSection = document.getElementById('videoUploadSection');
+        if (videoUploadSection) {
+            videoUploadSection.style.display = 'none';
+            const grid = videoUploadSection.parentElement;
+            if (grid.classList.contains('grid') && grid.classList.contains('two')) {
+                grid.style.gridTemplateColumns = '1fr';
+            }
+        }
+        
+        if (el.createRoomBtn) el.createRoomBtn.style.display = 'none';
+        if (el.joinRoomBtn) {
+            el.joinRoomBtn.style.display = 'inline-flex';
+            el.joinRoomBtn.addEventListener('click', () => {
+                joinGuestSession(roomFromUrl);
+            });
+        }
+        
+        showToast('Invitación detectada. ¡Listo para unirte!');
+
       } else {
-        // Host por defecto hasta que creen sala
+        // Host flow
         el.setupStatus.textContent = 'Crea una sala y envía una invitación.';
+        if (el.createRoomBtn) el.createRoomBtn.style.display = 'inline-flex';
+        if (el.joinRoomBtn) el.joinRoomBtn.style.display = 'none';
+        
+        const videoUploadSection = document.getElementById('videoUploadSection');
+        if (videoUploadSection) {
+            videoUploadSection.style.display = 'block';
+            const grid = videoUploadSection.parentElement;
+            if (grid.classList.contains('grid') && grid.classList.contains('two')) {
+                grid.style.gridTemplateColumns = ''; // Reset to CSS default
+            }
+        }
       }
 
       console.log('Watch Party listo – Switch theme + paletas + mascota integrada');
