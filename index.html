@@ -117,12 +117,30 @@
     .eye-lid {
       transform-origin: center;
       transform-box: fill-box;
-      animation: blink 6s infinite;
+      animation: blink 3s infinite;
     }
-    @keyframes blink { 0%, 97%, 100% { transform: scaleY(1); } 98%, 99% { transform: scaleY(0.1); } }
-    .wink .eye--left .eye-lid { animation: wink-animation 0.5s; }
-    .wink .eye--right .eye-lid { animation: none; }
-    @keyframes wink-animation { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.1); } }
+
+    @keyframes blink {
+      0%, 97%, 100% { 
+        transform: scaleY(1); 
+      }
+      98%, 99% { 
+        transform: scaleY(0.1); 
+      }
+    }
+    
+    .wink .eye--left .eye-lid { 
+      animation: wink-animation 0.5s; 
+    }
+    .wink .eye--right .eye-lid { 
+      animation: none; 
+    }
+    
+    @keyframes wink-animation { 
+      0%, 100% { transform: scaleY(1); } 
+      50% { transform: scaleY(0.1); } 
+    }
+    
     .mouth--smile { display: none; }
     .smile .mouth--normal { display: none; }
     .smile .mouth--smile { display: block; }
